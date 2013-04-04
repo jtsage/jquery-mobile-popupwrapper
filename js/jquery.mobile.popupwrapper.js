@@ -10,6 +10,8 @@
 	options: {
 		version: '0.0.9-2013040500', // jQueryMobile-YrMoDaySerial
 		displayMode: 'blank', // or 'button'
+		popupTheme: false,
+		popupOverlayTheme: false,
 		buttonMode: 'button',
 		forceMinWidth: false,
 		cleanOnClose: false,
@@ -36,22 +38,7 @@
 		callbackClose: false,
 		callbackCloseArgs: []
 	},
-	_eventHandler: function(e,p) {
-		// Handle the triggers
-		var self = e.data.widget,
-			o = e.data.widget.options;
-		
-		if ( ! e.isPropagationStopped() ) {
-			switch (p.method) {
-				case 'close':
-					self.close();
-					break;
-				case 'html':
-					self.updateBlank(p.source);
-					break;
-			}
-		}
-	},
+	
 	_create: function () {
 		var self = this,
 			o = $.extend(this.options, this.element.jqmData('options')),
@@ -179,48 +166,7 @@
 		
 		return buttonHTML;
 	},
-	_getCoords: function(widget) {
-		var self = widget,
-			docWinWidth   = $.mobile.activePage.width(),
-			docWinHighOff = $(window).scrollTop(),
-			docWinHigh    = $(window).height(),
-			diaWinWidth   = widget.sdIntContent.innerWidth(),
-			diaWinHigh    = widget.sdIntContent.outerHeight(),
-			
-			coords        = {
-				'high'    : $(window).height(),
-				'width'   : $.mobile.activePage.width(),
-				'fullTop' : $(window).scrollTop(),
-				'fullLeft': $(window).scrollLeft(),
-				'winTop'  : docWinHighOff + ((widget.options.top !== false) ? widget.options.top : (( docWinHigh / 2 ) - ( diaWinHigh / 2 ) )),
-				'winLeft' : ((widget.options.left !== false) ? widget.options.left : (( docWinWidth / 2 ) - ( diaWinWidth / 2 ) ))
-			};
-			
-		if ( coords.winTop < 45 ) { coords.winTop = 45; }
-			
-		return coords;
-	},
-	_orientChange: function(e) {
-		var self = e.data.widget,
-			o = e.data.widget.options,
-			coords = e.data.widget._getCoords(e.data.widget);
-		
-		e.stopPropagation();
-		
-		if ( self.isDialog === true ) {
-			return true;
-		} else {
-			if ( o.fullScreen === true && ( coords.width < 400 || o.fullScreenForce === true ) ) {
-				self.sdIntContent.css({'border': 'none', 'position': 'absolute', 'top': coords.fullTop, 'left': coords.fullLeft, 'height': coords.high, 'width': coords.width, 'maxWidth': coords.width }).removeClass('ui-simpledialog-hidden');
-			} else {
-				self.sdIntContent.css({'position': 'absolute', 'top': coords.winTop, 'left': coords.winLeft}).removeClass('ui-simpledialog-hidden');
-			}
-		}
-	},
-	repos: function() {
-		var bsEvent = { data: {widget:this}, stopPropagation: function () { return true; }};
-		this._orientChange(bsEvent);
-	},
+	
 	open: function() {
 		var self = this,
 			o = this.options,
@@ -281,90 +227,8 @@
 			o.callbackOpen.apply(self, o.callbackOpenArgs);
 		}
 	},
-	close: function() {
-		var self = this, o = this.options, retty;
-		
-		if ( $.isFunction(self.options.callbackClose) ) {
-			retty = self.options.callbackClose.apply(self, self.options.callbackCloseArgs);
-			if ( retty === false ) { return false; }
-		}
-		
-		if ( self.isDialog ) {
-			$(self.dialogPage).dialog('close');
-			self.sdIntContent.addClass('ui-simpledialog-hidden');
-			self.sdIntContent.appendTo(self.displayAnchor.parent());
-			if ( $.mobile.activePage.jqmData("page").options.domCache != true && $.mobile.activePage.is(":jqmData(external-page='true')") ) {
-				$.mobile.activePage.bind("pagehide.remove", function () {
-					$(this).remove();
-				});
-			}
-		} else {
-			if ( self.options.showModal === true && self.options.animate === true ) {
-				self.screen.fadeOut('slow');
-			} else {
-				self.screen.addClass('ui-simpledialog-hidden');
-			}
-			self.sdIntContent.addClass('ui-simpledialog-hidden').removeClass('in');
-			$(document).unbind('orientationchange.simpledialog');
-			if ( self.options.resizeListener === true ) { $(window).unbind('resize.simpledialog'); }
-		}
-		
-		if ( o.mode === 'blank' && o.blankContent !== false && o.blankContentAdopt === true ) {
-			self.element.append(o.blankContent);
-			o.blankContent = true;
-		}
-		
-		if ( self.isDialog === true || self.options.animate === true ) {
-			setTimeout(function(that) { return function () { that.destroy(); };}(self), 1000);
-		} else {
-			self.destroy();
-		}
-	},
-	destroy: function() {
-		var self = this,
-			ele = self.element;
-		
-		if ( self.options.mode === 'blank' ) {
-			$.mobile.sdCurrentDialog.sdIntContent.find('select').each(function() {
-				if ( $(this).data('nativeMenu') == false ) {
-					$(this).data('selectmenu').menuPage.remove();
-					$(this).data('selectmenu').screen.remove();
-					$(this).data('selectmenu').listbox.remove();
-				}
-			});
-		}
-		
-		$(self.sdIntContent).remove();
-		$(self.dialogPage).remove();
-		$(self.screen).remove();
-		$(document).unbind('simpledialog.'+self.internalID);
-		delete $.mobile.sdCurrentDialog;
-		$.Widget.prototype.destroy.call(self);
-		if ( self.options.safeNuke === true && $(ele).parents().length === 0 && $(ele).contents().length === 0 ) {
-			ele.remove();
-		}
-	},
-	updateBlank: function (newHTML) {
-		var self = this,
-			o = this.options;
-			
-		self.sdIntContent.empty();
-			
-		if ( o.headerText !== false || o.headerClose !== false ) {
-			self.sdHeader = $('<div class="ui-header ui-bar-'+o.themeHeader+'"></div>');
-			if ( o.headerClose === true ) {
-				$("<a class='ui-btn-left' rel='close' href='#'>Close</a>").appendTo(self.sdHeader).buttonMarkup({ theme  : o.themeHeader, icon   : 'delete', iconpos: 'notext', corners: true, shadow : true });
-			}
-			$('<h1 class="ui-title">'+((o.headerText !== false)?o.headerText:'')+'</h1>').appendTo(self.sdHeader);
-			self.sdHeader.appendTo(self.sdIntContent);
-		}
-		
-		$(newHTML).appendTo(self.sdIntContent);
-		self.sdIntContent.trigger('create');
-		$(document).trigger('orientationchange.simpledialog');
-	},
 	_init: function() {
-		this.open();
+		//this.open();
 	}
   });
 })( jQuery );
