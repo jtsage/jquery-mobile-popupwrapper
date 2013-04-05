@@ -12,16 +12,16 @@
 		displayMode: 'blank', // or 'button'
 		popupTheme: false,
 		popupOverlayTheme: false,
+		padContent: false,
 		buttonMode: 'button',
-		forceMinWidth: false,
-		cleanOnClose: false,
 		transition: 'pop',
 		clickEvent: 'click',
-		attachTo: 'window',
+		positionTo: 'window',
 		
 		// These are button only options
 		headerText: false,
 		headerTheme: 'a',
+		headerMinWidth: false,
 		buttonDefaultTheme: 'b',
 		
 		// These options are used in all modes
@@ -41,26 +41,61 @@
 	
 	_create: function () {
 		var self = this,
-			o = $.extend(this.options, this.element.jqmData('options')),
-			initDate = new Date(),
-			content = $("<div class='ui-simpledialog-container ui-overlay-shadow ui-corner-all ui-simpledialog-hidden " + 
-					((o.animate === true) ? o.transition : '') + " ui-body-" + o.themeDialog + "'></div>");
+			o = this.options,
+			basePop = $('<div data-role="popup"></div>'), gennyPop, funcs = {},
+			gennyPage = $('<div data-role="page"></div>');
 			
-		if ( o.themeButtonDefault === false ) { o.themeButtonDefault = o.themeDialog; }
-		if ( o.themeInput === false ) { o.themeInput = o.themeDialog; }
-		$.mobile.sdCurrentDialog = self;
-		if ( typeof $.mobile.sdLastInput !== 'undefined' ) { delete $.mobile.sdLastInput; }
-		self.internalID = initDate.getTime();
-		self.displayAnchor = $.mobile.activePage.children('.ui-content').first();
-		if ( self.displayAnchor.length === 0 ) { self.displayAnchor = $.mobile.activePage; }
+		if ( o.popupTheme !== false ) { basePop.attr('data-theme', o.popupTheme); }
+		if ( o.popupOverlay !== false ) { basePop.attr('data-overlay-theme', o.popupOverlay); }
+		if ( o.padContent !== false ) { basePop.attr('class', 'ui-content'); }
 		
-		self.dialogPage = $("<div data-role='dialog' data-theme='" + o.themeDialog + "'><div data-role='header'></div><div data-role='content'></div></div>");
-		self.sdAllContent = self.dialogPage.find('[data-role=content]');
+		if ( o.mode = 'blank' ) {
+			$(o.content).appendTo(gennyPage).trigger('create');
+		}
 		
-		content.appendTo(self.sdAllContent);
+		// The rationale behind this: Things do not always generate properly
+		// if they aren't on a page.  So, I made a page, I generated everything,
+		// then I pluck it back off there and drop it in the popup.  And of 
+		// course clean up the leavings.
+		gennyPage.appendTo('body').page().trigger('create');
+		basePop.append(gennyPage.children());
+		gennyPage.remove();
+		basePop.appendTo($('.active-page'));
+			
+		if ( !$.isFunction(o.callbackOpen) ) { 
+			// It's either this, or yet another temporary object.  return true probably
+			// costs less.
+			funcs.open = function () { return true; } 
+		} else {
+			funcs.open = function () { o.callbackOpen.apply(self, o.callbackOpenArgs); }
+		}
 		
-		self.sdIntContent = self.sdAllContent.find('.ui-simpledialog-container');
-		self.sdIntContent.css('width', o.width);
+		// If you want this to work more than once, this is required.  Really.  Not kidding.
+		//
+		// (Ok, so if you *really* want to reuse - and you don't - I assure you, you don't
+		//  you *could* move all of this shit to the open method, and then you'd need to 
+		//  both create the dialog as shown in the all demos, *and* call open.  It's a terrible
+		//  idea.  And frankly, if you can do that, you really ought to be just writing your 
+		//  own custom wrapper.  Or, heaven forbid, do some shit on the server.
+		funcs.clean = function () { basePop.remove(); self.destroy(); }
+		
+		if ( !$.isFunction(o.callbackClose) ) {
+			funcs.close = funcs.clean;
+		} else {
+			funcs.close = function () { o.callbackClose.apply(self, o.callbackCloseArgs); funcs.clean.apply(self); };
+		}
+			
+		basePop.popup({'transition':o.transition, 'positionTo':o.positionTo, 'afterclose': funcs.close, 'afteropen': funcs.open});
+		basePop.popup('open');
+		
+		console.debug(gennyPage[0]);
+		console.debug(basePop[0]);
+		
+		
+		
+		
+		/*
+		
 		
 		if ( o.headerText !== false || o.headerClose !== false ) {
 			self.sdHeader = $('<div style="margin-bottom: 4px;" class="ui-header ui-bar-'+o.themeHeader+'"></div>');
@@ -71,15 +106,7 @@
 			self.sdHeader.appendTo(self.sdIntContent);
 		}
 		
-		if ( o.mode === 'blank' ) {
-			if ( o.blankContent === true ) {
-				if ( o.blankContentAdopt === true ) {
-					o.blankContent = self.element.children();
-				} else {
-					o.blankContent = self.element.html();
-				}
-			}
-			$(o.blankContent).appendTo(self.sdIntContent);
+
 		} else if ( o.mode === 'button' ) {
 			self._makeButtons().appendTo(self.sdIntContent);
 		}
@@ -89,21 +116,7 @@
 		self.dialogPage.appendTo( $.mobile.pageContainer )
 			.page().css('minHeight', '0px').css('zIndex', o.zindex);
 			
-		if ( o.animate === true ) { self.dialogPage.addClass(o.transition); }
-		
-		self.screen = $("<div>", {'class':'ui-simpledialog-screen ui-simpledialog-hidden'})
-			.css('z-index', (o.zindex-1))
-			.appendTo(self.displayAnchor.parent())
-			.bind(o.clickEvent, function(event){
-				if ( !o.forceInput ) {
-					self.close();
-				}
-				event.preventDefault();
-			});
-
-		if ( o.showModal ) { self.screen.addClass('ui-simpledialog-screen-modal'); }
-		
-		$(document).bind('simpledialog.'+self.internalID, {widget:self}, function(e,p) { self._eventHandler(e,p); });
+		*/
 	},
 	_makeButtons: function () {
 		var self = this,
@@ -226,9 +239,6 @@
 		if ( $.isFunction(o.callbackOpen) ) {
 			o.callbackOpen.apply(self, o.callbackOpenArgs);
 		}
-	},
-	_init: function() {
-		//this.open();
 	}
   });
 })( jQuery );
