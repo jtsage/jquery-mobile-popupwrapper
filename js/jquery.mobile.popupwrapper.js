@@ -47,6 +47,8 @@
 			basePop = $('<div data-role="popup"></div>'), gennyPop, funcs = {},
 			gennyPage = $('<div data-role="page"></div>');
 			
+		self.internalID = initDate.getTime();
+		
 		if ( o.popupTheme !== false ) { basePop.attr('data-theme', o.popupTheme); }
 		if ( o.popupOverlay !== false ) { basePop.attr('data-overlay-theme', o.popupOverlay); }
 		if ( o.padContent !== false ) { basePop.attr('class', 'ui-content'); }
@@ -54,25 +56,55 @@
 		// Jackass trap.
 		if ( o.dismissible === false && o.closeButton === false ) { o.dismissible = true; }
 		
-		if ( o.mode = 'blank' ) {
+		if ( o.displayMode === 'blank' ) {
+			// BLANK mode
 			if ( o.closeButton === "left" ) {
 				o.content = '<a href="#" data-rel="back" data-role="button" data-theme="'+o.closeButtonTheme+'" data-icon="delete" data-iconpos="notext" class="ui-btn-left">Close</a>' + o.content;
 			}
 			if ( o.closeButton === "right" ) {
 				o.content = '<a href="#" data-rel="back" data-role="button" data-theme="'+o.closeButtonTheme+'" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>' + o.content;
 			}
-			$(o.content).appendTo(gennyPage).trigger('create');
+		} else {
+			// BUTTON mode basics
+			console.log('a');
+			if ( o.closeButton === "left" ) {
+				o.content = '<a href="#" data-rel="back" data-role="button" data-theme="'+o.closeButtonTheme+'" data-icon="delete" data-iconpos="notext" class="ui-btn-left">Close</a>';
+			}
+			if ( o.closeButton === "right" ) {
+				o.content = '<a href="#" data-rel="back" data-role="button" data-theme="'+o.closeButtonTheme+'" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>';
+			}
+			if ( o.headerText !== false ) {
+				console.log('b');
+				o.content = o.content + '<div data-role="header" data-theme="' + o.headerTheme + '"' +
+					((o.headerMinWidth !== false) ? ' style="min-width: ' + o.headerMinWidth + '"' : '') +
+					"><h1>" + o.headerText + "</h1></div>";
+			}
+			o.content = o.content + '<div data-role="content">';
+			
+			if ( o.subTitle !== false ) {
+				o.content = o.content + '<p>' + o.subTitle + '</p>';
+			}
+			o.content = o.content + '<div class="popupbuttonshere"></div></div>';
 		}
 		
 		// The rationale behind this: Things do not always generate properly
 		// if they aren't on a page.  So, I made a page, I generated everything,
 		// then I pluck it back off there and drop it in the popup.  And of 
 		// course clean up the leavings.
+		$(o.content).appendTo(gennyPage);//.trigger('create');
 		gennyPage.appendTo('body').page().trigger('create');
 		basePop.append(gennyPage.children());
 		gennyPage.remove();
 		basePop.appendTo($('.active-page'));
-			
+		
+		if ( o.displayMode === 'button' ) {
+			if ( o.buttonMode === 'list' ) {
+				self._makeListButtons(basePop);
+			} else {
+				self._makeButtonButtons(basePop);
+			}
+		}
+		
 		if ( !$.isFunction(o.callbackOpen) ) { 
 			// It's either this, or yet another temporary object.  return true probably
 			// costs less.
@@ -101,56 +133,11 @@
 		
 		console.debug(gennyPage[0]);
 		console.debug(basePop[0]);
-		
-		
-		
-		
-		/*
-		
-		
-		if ( o.headerText !== false || o.headerClose !== false ) {
-			self.sdHeader = $('<div style="margin-bottom: 4px;" class="ui-header ui-bar-'+o.themeHeader+'"></div>');
-			if ( o.headerClose === true ) {
-				$("<a class='ui-btn-left' rel='close' href='#'>Close</a>").appendTo(self.sdHeader).buttonMarkup({ theme  : o.themeHeader, icon   : 'delete', iconpos: 'notext', corners: true, shadow : true });
-			}
-			$('<h1 class="ui-title">'+((o.headerText !== false)?o.headerText:'')+'</h1>').appendTo(self.sdHeader);
-			self.sdHeader.appendTo(self.sdIntContent);
-		}
-		
-
-		} else if ( o.mode === 'button' ) {
-			self._makeButtons().appendTo(self.sdIntContent);
-		}
-		
-		self.sdIntContent.appendTo(self.displayAnchor.parent());
-		
-		self.dialogPage.appendTo( $.mobile.pageContainer )
-			.page().css('minHeight', '0px').css('zIndex', o.zindex);
-			
-		*/
 	},
-	_makeButtons: function () {
+	_makeButtonButtons: function (basePop) {
 		var self = this,
 			o = self.options,
-			buttonHTML = $('<div></div>'),
-			pickerInput = $("<div class='ui-simpledialog-controls'><input class='ui-simpledialog-input ui-input-text ui-shadow-inset ui-corner-all ui-body-"+o.themeInput+"' type='"+((o.buttonPassword===true)?"password":"text")+"' value='"+((o.buttonInputDefault!==false)?o.buttonInputDefault.replace( '"', "&#34;" ).replace( "'", "&#39;" ):"")+"' name='pickin' /></div>"),
-			pickerChoice = $("<div>", { "class":'ui-simpledialog-controls' });
-			
-		
-		if ( o.buttonPrompt !== false ) {
-			self.buttonPromptText = $("<p class='ui-simpledialog-subtitle'>"+o.buttonPrompt+"</p>").appendTo(buttonHTML);
-		}
-		
-		if ( o.buttonInput !== false ) {
-			$.mobile.sdLastInput = "";
-			pickerInput.appendTo(buttonHTML);
-			pickerInput.find('input').bind('change', function () {
-				$.mobile.sdLastInput = pickerInput.find('input').first().val();
-				self.thisInput = pickerInput.find('input').first().val();
-			});
-		}
-		
-		pickerChoice.appendTo(buttonHTML);
+			thisNode = basePop.find('.popupbuttonshere');
 		
 		self.butObj = [];
 		
@@ -159,7 +146,7 @@
 			props = $.extend({
 				text   : name,
 				id     : name + self.internalID,
-				theme  : o.themeButtonDefault,
+				theme  : o.buttonDefaultTheme,
 				icon   : 'check',
 				iconpos: 'left',
 				corners: 'true',
@@ -168,8 +155,9 @@
 				close  : true
 			}, props);
 			
-			self.butObj.push($("<a href='#'>"+name+"</a>")
-				.appendTo(pickerChoice)
+			
+			self.butObj.push($("<a href='#'>"+props.text+"</a>")
+				.appendTo(thisNode)
 				.attr('id', props.id)
 				.buttonMarkup({
 					theme  : props.theme,
@@ -182,74 +170,53 @@
 					if ( o.buttonInput ) { self.sdIntContent.find('input [name=pickin]').trigger('change'); }
 					var returnValue = props.click.apply(self, $.merge(arguments, props.args));
 					if ( returnValue !== false && props.close === true ) {
-						self.close();
+						basePop.popup('close');
 					}
 				})
 			);
 		});
-		
-		return buttonHTML;
 	},
-	
-	open: function() {
+	_makeListButtons: function (basePop) {
 		var self = this,
-			o = this.options,
-			coords = this._getCoords(this);
+			o = self.options,
+			thisNode = basePop.find('.popupbuttonshere');
 		
-		self.sdAllContent.find('.ui-btn-active').removeClass('ui-btn-active');
-		self.sdIntContent.delegate('[rel=close]', o.clickEvent, function (e) { e.preventDefault(); self.close(); });
+		self.butObj = [];
 		
-		if ( ( o.dialogAllow === true && coords.width < 400 ) || o.dialogForce ) {
-			self.isDialog = true;
+		$.each(o.buttons, function(name, props) {
+			props = $.isFunction( props ) ? { click: props } : props;
+			props = $.extend({
+				text   : name,
+				id     : name + self.internalID,
+				theme  : o.buttonDefaultTheme,
+				icon   : 'check',
+				iconpos: 'left',
+				corners: 'true',
+				shadow : 'true',
+				args   : [],
+				close  : true
+			}, props);
 			
-			if ( o.mode === 'blank' ) { // Custom selects do not play well with dialog mode - so, we turn them off.
-				self.sdIntContent.find('select').each(function () {
-					$(this).jqmData('nativeMenu', true);
-				});
-			}
 			
-			self.displayAnchor.parent().unbind("pagehide.remove");
-			self.sdAllContent.append(self.sdIntContent);
-			self.sdAllContent.trigger('create');
-			if ( o.headerText !== false ) {
-				self.sdHeader.find('h1').appendTo(self.dialogPage.find('[data-role=header]'));
-				self.sdIntContent.find('.ui-header').empty().removeClass();
-			}
-			if ( o.headerClose === true ) {
-				self.dialogPage.find('.ui-header a').bind('click', function () {
-					setTimeout("$.mobile.sdCurrentDialog.destroy();", 1000);
-				});
-			} else {
-				self.dialogPage.find('.ui-header a').remove();
-			}
-			
-			self.sdIntContent.removeClass().css({'top': 'auto', 'width': 'auto', 'left': 'auto', 'marginLeft': 'auto', 'marginRight': 'auto', 'zIndex': o.zindex});
-			$.mobile.changePage(self.dialogPage, {'transition': (o.animate === true) ? o.transition : 'none'});
-		} else {
-			self.isDialog = false;
-			self.selects = [];
-			
-			if ( o.fullScreen === false ) {
-				if ( o.showModal === true && o.animate === true ) { self.screen.fadeIn('slow'); }
-				else { self.screen.removeClass('ui-simpledialog-hidden'); }
-			}
-			
-			self.sdIntContent.addClass('ui-overlay-shadow in').css('zIndex', o.zindex).trigger('create');
-			
-			if ( o.fullScreen === true && ( coords.width < 400 || o.fullScreenForce === true ) ) {
-				self.sdIntContent.removeClass('ui-simpledialog-container').css({'border': 'none', 'position': 'absolute', 'top': coords.fullTop, 'left': coords.fullLeft, 'height': coords.high, 'width': coords.width, 'maxWidth': coords.width }).removeClass('ui-simpledialog-hidden');
-			} else {
-				self.sdIntContent.css({'position': 'absolute', 'top': coords.winTop, 'left': coords.winLeft}).removeClass('ui-simpledialog-hidden');
-			}
-			
-			$(document).bind('orientationchange.simpledialog', {widget:self}, function(e) { self._orientChange(e); });
-			if ( o.resizeListener === true ) {
-				$(window).bind('resize.simpledialog', {widget:self}, function (e) { self._orientChange(e); });
-			}
-		}
-		if ( $.isFunction(o.callbackOpen) ) {
-			o.callbackOpen.apply(self, o.callbackOpenArgs);
-		}
+			self.butObj.push($("<a href='#'>"+props.text+"</a>")
+				.appendTo(thisNode)
+				.attr('id', props.id)
+				.buttonMarkup({
+					theme  : props.theme,
+					icon   : props.icon,
+					iconpos: props.iconpos,
+					corners: props.corners,
+					shadow : props.shadow
+				}).unbind("vclick click")
+				.bind(o.clickEvent, function() {
+					if ( o.buttonInput ) { self.sdIntContent.find('input [name=pickin]').trigger('change'); }
+					var returnValue = props.click.apply(self, $.merge(arguments, props.args));
+					if ( returnValue !== false && props.close === true ) {
+						basePop.popup('close');
+					}
+				})
+			);
+		});
 	}
   });
 })( jQuery );

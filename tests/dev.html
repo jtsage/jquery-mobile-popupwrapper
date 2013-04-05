@@ -41,15 +41,31 @@
 				$(document).delegate('#simplebool', 'click', function() {
 					console.log('click');
 					$(this).popupwrapper({
-						'mode' : 'blank',
+						displayMode : 'button',
 						closeButton: 'right',
+						headerText: 'Choose One..',
+						headerMinWidth: '350px',
+						subTitle: 'Yeah, choose one dickhead!',
 						dismissible: false,
 						callbackOpen: function () { console.log('hi'); },
 						callbackClose: function () { console.log('bye'); },
 						content:
 							'<div data-role="header"><h1>Howdy</h1></div><div data-role="content"><p>Hi!Hi!Hi!Hi!Hi!Hi!Hi!Hi!Hi!</p></div>',
-						'fullHTML' : 
-							"<ul data-role='listview'><li>Some</li><li>List</li><li>Items</li></ul><a rel='close' data-role='button' href='#'>Close</a>"
+						buttons : {
+							'OK': {
+								click: function () { 
+									console.log('OK');
+								}
+							},
+							'Cancel': {
+								click: function () { 
+									console.log('CANCEL');
+								},
+								icon: "delete",
+								theme: "c",
+								close: false
+							}
+						}
 						})
 					});
 				
