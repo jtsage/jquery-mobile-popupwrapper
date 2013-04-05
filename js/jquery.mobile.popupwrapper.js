@@ -22,11 +22,13 @@
 		headerText: false,
 		headerTheme: 'a',
 		headerMinWidth: false,
+		subTitle: false,
 		buttonDefaultTheme: 'b',
 		
 		// These options are used in all modes
 		closeButton: false, // or left, or right
-		dismissable: true,
+		closeButtonTheme: 'a',
+		dismissible: true,
 		
 		// One of these needs set
 		content: false,
@@ -49,7 +51,16 @@
 		if ( o.popupOverlay !== false ) { basePop.attr('data-overlay-theme', o.popupOverlay); }
 		if ( o.padContent !== false ) { basePop.attr('class', 'ui-content'); }
 		
+		// Jackass trap.
+		if ( o.dismissible === false && o.closeButton === false ) { o.dismissible = true; }
+		
 		if ( o.mode = 'blank' ) {
+			if ( o.closeButton === "left" ) {
+				o.content = '<a href="#" data-rel="back" data-role="button" data-theme="'+o.closeButtonTheme+'" data-icon="delete" data-iconpos="notext" class="ui-btn-left">Close</a>' + o.content;
+			}
+			if ( o.closeButton === "right" ) {
+				o.content = '<a href="#" data-rel="back" data-role="button" data-theme="'+o.closeButtonTheme+'" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>' + o.content;
+			}
 			$(o.content).appendTo(gennyPage).trigger('create');
 		}
 		
@@ -85,7 +96,7 @@
 			funcs.close = function () { o.callbackClose.apply(self, o.callbackCloseArgs); funcs.clean.apply(self); };
 		}
 			
-		basePop.popup({'transition':o.transition, 'positionTo':o.positionTo, 'afterclose': funcs.close, 'afteropen': funcs.open});
+		basePop.popup({'transition':o.transition, 'dismissible': o.dismissible, 'positionTo':o.positionTo, 'afterclose': funcs.close, 'afteropen': funcs.open});
 		basePop.popup('open');
 		
 		console.debug(gennyPage[0]);

@@ -42,9 +42,12 @@
 					console.log('click');
 					$(this).popupwrapper({
 						'mode' : 'blank',
+						closeButton: 'right',
+						dismissible: false,
 						callbackOpen: function () { console.log('hi'); },
+						callbackClose: function () { console.log('bye'); },
 						content:
-							'<div data-role="header"><h1>Howdy</h1></div><div data-role="content"><p>Hi!</p></div>',
+							'<div data-role="header"><h1>Howdy</h1></div><div data-role="content"><p>Hi!Hi!Hi!Hi!Hi!Hi!Hi!Hi!Hi!</p></div>',
 						'fullHTML' : 
 							"<ul data-role='listview'><li>Some</li><li>List</li><li>Items</li></ul><a rel='close' data-role='button' href='#'>Close</a>"
 						})
