@@ -8,7 +8,7 @@
 (function($, undefined ) {
   $.widget( "mobile.popupwrapper", $.mobile.widget, {
 	options: {
-		version: '1.3.0-2013040500', // jQueryMobile-YrMoDaySerial
+		version: '1.3.0-2013040600', // jQueryMobile-YrMoDaySerial
 		displayMode: 'blank', // or 'button'
 		popupTheme: false,
 		popupOverlayTheme: false,
@@ -104,14 +104,6 @@
 			}
 		}
 		
-		if ( !$.isFunction(o.callbackOpen) ) { 
-			// It's either this, or yet another temporary object.  return true probably
-			// costs less.
-			funcs.open = function () { return true; } 
-		} else {
-			funcs.open = function () { o.callbackOpen.apply(self, o.callbackOpenArgs); }
-		}
-		
 		// If you want this to work more than once, this is required.  Really.  Not kidding.
 		//
 		// (Ok, so if you *really* want to reuse - and you don't - I assure you, you don't
@@ -121,13 +113,20 @@
 		//  own custom wrapper.  Or, heaven forbid, do some shit on the server.
 		funcs.clean = function () { basePop.remove(); self.destroy(); }
 		
-		if ( !$.isFunction(o.callbackClose) ) {
-			funcs.close = funcs.clean;
-		} else {
-			funcs.close = function () { o.callbackClose.apply(self, o.callbackCloseArgs); funcs.clean.apply(self); };
+		// afterclose and afteropen don't seem to function correctly in 1.3.0-FINAL.  Work fine this way in latest (1.4.0-PRE)	
+		// basePop.popup({'transition':o.transition, 'dismissible': o.dismissible, 'positionTo':o.positionTo, 'afterclose': funcs.close, 'afteropen': funcs.open});
+		basePop.popup({'transition':o.transition, 'dismissible': o.dismissible, 'positionTo':o.positionTo});
+
+		if ( $.isFunction(o.callbackOpen) ) {
+			basePop.on('popupafteropen', function () { o.callbackOpen.apply(self, o.callbackOpenArgs); });
 		}
-			
-		basePop.popup({'transition':o.transition, 'dismissible': o.dismissible, 'positionTo':o.positionTo, 'afterclose': funcs.close, 'afteropen': funcs.open});
+
+		if ( $.isFunction(o.callbackClose) ) {
+			basePop.on('popupafterclose', function () { o.callbackClose.apply(self, o.callbackCloseArgs); funcs.clean.apply(self); });
+		} else {
+			basePop.on('popupafterclose', function () { funcs.clean.apply(self); });
+		}
+		
 		basePop.popup('open');
 	},
 	_makeButtonButtons: function (basePop) {
