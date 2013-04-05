@@ -127,6 +127,8 @@
 			
 		basePop.popup({'transition':o.transition, 'dismissible': o.dismissible, 'positionTo':o.positionTo, 'afterclose': funcs.close, 'afteropen': funcs.open});
 		basePop.popup('open');
+
+		$.extend(self, {basePop: basePop});
 	},
 	_makeButtonButtons: function (basePop) {
 		var self = this,

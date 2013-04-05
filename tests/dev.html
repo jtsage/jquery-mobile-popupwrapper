@@ -55,8 +55,14 @@
 						headerMinWidth: '350px',
 						subTitle: 'Yeah, choose one dickhead!',
 						dismissible: false,
-						callbackOpen: function () { console.log('hi'); },
-						callbackClose: function () { console.log('bye'); },
+						callbackOpen: function () { 
+							window.thisPop = this.basePop;
+							window.thisPopTime = setTimeout(function () { window.thisPop.popup('close'); }, 3000);
+//							console.log(this); 
+						},
+						callbackClose: function () {
+							clearTimeout(window.thisPopTime);
+							 console.log('bye'); },
 						content:
 							'<div data-role="header"><h1>Howdy</h1></div><div data-role="content"><p>Hi!Hi!Hi!Hi!Hi!Hi!Hi!Hi!Hi!</p></div>',
 						buttons : {
