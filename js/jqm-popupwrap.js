@@ -1,5 +1,5 @@
  /*
- * jQuery Mobile Framework : plugin to provide a dialogs Widget. ver2
+ * jQuery Mobile Framework : plugin to provide a popup wrapper
  * Copyright (c) JTSage
  * CC 3.0 Attribution.  May be relicensed without permission/notifcation.
  * https://github.com/jtsage/jquery-mobile-popupwrapper
@@ -127,9 +127,6 @@
 			
 		basePop.popup({'transition':o.transition, 'dismissible': o.dismissible, 'positionTo':o.positionTo, 'afterclose': funcs.close, 'afteropen': funcs.open});
 		basePop.popup('open');
-		
-		console.debug(gennyPage[0]);
-		console.debug(basePop[0]);
 	},
 	_makeButtonButtons: function (basePop) {
 		var self = this,
