@@ -92,8 +92,10 @@
 		gennyPage.appendTo('body').page().trigger('create');
 		basePop.append(gennyPage.children());
 		gennyPage.remove();
-		basePop.appendTo($('.active-page'));
+		basePop.appendTo($('.ui-page-active'));
 		
+		$.extend(self, {basePop: basePop});
+
 		if ( o.displayMode === 'button' ) {
 			if ( o.buttonMode === 'list' ) {
 				self._makeListButtons(basePop);
@@ -127,8 +129,6 @@
 			
 		basePop.popup({'transition':o.transition, 'dismissible': o.dismissible, 'positionTo':o.positionTo, 'afterclose': funcs.close, 'afteropen': funcs.open});
 		basePop.popup('open');
-
-		$.extend(self, {basePop: basePop});
 	},
 	_makeButtonButtons: function (basePop) {
 		var self = this,
