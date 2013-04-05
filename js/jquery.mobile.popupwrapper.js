@@ -40,14 +40,13 @@
 		callbackClose: false,
 		callbackCloseArgs: []
 	},
-	
 	_create: function () {
 		var self = this,
 			o = this.options,
 			basePop = $('<div data-role="popup"></div>'), gennyPop, funcs = {},
 			gennyPage = $('<div data-role="page"></div>');
 			
-		self.internalID = initDate.getTime();
+		self.internalID = new Date().getTime();
 		
 		if ( o.popupTheme !== false ) { basePop.attr('data-theme', o.popupTheme); }
 		if ( o.popupOverlay !== false ) { basePop.attr('data-overlay-theme', o.popupOverlay); }
@@ -66,7 +65,6 @@
 			}
 		} else {
 			// BUTTON mode basics
-			console.log('a');
 			if ( o.closeButton === "left" ) {
 				o.content = '<a href="#" data-rel="back" data-role="button" data-theme="'+o.closeButtonTheme+'" data-icon="delete" data-iconpos="notext" class="ui-btn-left">Close</a>';
 			}
@@ -74,14 +72,13 @@
 				o.content = '<a href="#" data-rel="back" data-role="button" data-theme="'+o.closeButtonTheme+'" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>';
 			}
 			if ( o.headerText !== false ) {
-				console.log('b');
 				o.content = o.content + '<div data-role="header" data-theme="' + o.headerTheme + '"' +
 					((o.headerMinWidth !== false) ? ' style="min-width: ' + o.headerMinWidth + '"' : '') +
 					"><h1>" + o.headerText + "</h1></div>";
 			}
 			o.content = o.content + '<div data-role="content">';
 			
-			if ( o.subTitle !== false ) {
+			if ( o.subTitle !== false && o.buttonMode !== 'list' ) {
 				o.content = o.content + '<p>' + o.subTitle + '</p>';
 			}
 			o.content = o.content + '<div class="popupbuttonshere"></div></div>';
@@ -155,7 +152,6 @@
 				close  : true
 			}, props);
 			
-			
 			self.butObj.push($("<a href='#'>"+props.text+"</a>")
 				.appendTo(thisNode)
 				.attr('id', props.id)
@@ -167,7 +163,6 @@
 					shadow : props.shadow
 				}).unbind("vclick click")
 				.bind(o.clickEvent, function() {
-					if ( o.buttonInput ) { self.sdIntContent.find('input [name=pickin]').trigger('change'); }
 					var returnValue = props.click.apply(self, $.merge(arguments, props.args));
 					if ( returnValue !== false && props.close === true ) {
 						basePop.popup('close');
@@ -179,37 +174,29 @@
 	_makeListButtons: function (basePop) {
 		var self = this,
 			o = self.options,
-			thisNode = basePop.find('.popupbuttonshere');
+			thisParentNode = basePop.find('.popupbuttonshere'),
+			thisNode = $('<ul data-role="listview"></ul>'),
+			gennyPage = $('<div data-role="page"><div id="tempcontent" data-role="content"></div></div>');
 		
 		self.butObj = [];
+		
+		if ( o.subTitle !== false ) {
+			$("<li data-role='list-divider'>"+o.subTitle+"</li>").appendTo(thisNode)
+		}
 		
 		$.each(o.buttons, function(name, props) {
 			props = $.isFunction( props ) ? { click: props } : props;
 			props = $.extend({
 				text   : name,
 				id     : name + self.internalID,
-				theme  : o.buttonDefaultTheme,
 				icon   : 'check',
-				iconpos: 'left',
-				corners: 'true',
-				shadow : 'true',
 				args   : [],
 				close  : true
 			}, props);
 			
-			
-			self.butObj.push($("<a href='#'>"+props.text+"</a>")
+			self.butObj.push($("<li id='"+props.id+"' data-icon='"+props.icon+"'><a href='#'>"+props.text+"</a></li>")
 				.appendTo(thisNode)
-				.attr('id', props.id)
-				.buttonMarkup({
-					theme  : props.theme,
-					icon   : props.icon,
-					iconpos: props.iconpos,
-					corners: props.corners,
-					shadow : props.shadow
-				}).unbind("vclick click")
 				.bind(o.clickEvent, function() {
-					if ( o.buttonInput ) { self.sdIntContent.find('input [name=pickin]').trigger('change'); }
 					var returnValue = props.click.apply(self, $.merge(arguments, props.args));
 					if ( returnValue !== false && props.close === true ) {
 						basePop.popup('close');
@@ -217,6 +204,11 @@
 				})
 			);
 		});
+		
+		thisNode.appendTo(gennyPage.find('#tempcontent'));
+		gennyPage.appendTo('body').page().trigger('create');
+		thisParentNode.append(gennyPage.find('#tempcontent').children());
+		gennyPage.remove();
 	}
   });
 })( jQuery );
