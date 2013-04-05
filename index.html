@@ -131,6 +131,38 @@
 				});
 			</script>
 
+			<h3>Button (List) Mode w/ Input</h3>
+			<a href="#" data-role="button" id="butlistinmode">Open Dialog</a>
+			<a href="#sourceBUTLISTIN" data-role="button" data-theme="e" data-mini="true" data-rel="popup" data-transition="pop">Source Code</a>
+
+			<script type="text/javascript">
+				$('#butlistinmode').on('vclick', function() {
+					$('<div>').popupwrapper({
+						displayMode: 'button',
+						buttonMode:  'list',
+						closeButton: 'right',
+						headerText:  'Buttons',
+						subTitle:    'Pick one, eh?',
+						headerMinWidth: '300px',
+						inputList: [{'id': 'something', 'title':'An Input', 'type':'text'}],
+						buttons: {
+							'OK': {
+								click: function () { 
+									alert('You clicked OK: ' + this.basePop.find('#something').val());
+								}
+							},
+							'Cancel': {
+								click: function () { 
+									alert('You clicked CANCEL');
+								},
+								icon: "delete",
+								theme: "c",
+							}
+						}
+					});
+				});
+			</script>
+
 
 			<div id="sourceBLNK" data-role="popup" class="ui-content">
 				<pre class="prettyprint">
@@ -190,7 +222,30 @@ $('#butlistmode').on('vclick', function() {
   });
 });</pre>
 			</div>
-
+			<div id="sourceBUTLISTIN" data-role="popup" class="ui-content">
+				<pre class="prettyprint">
+$('#butlistmode').on('vclick', function() {
+  $('&lt;div&gt;').popupwrapper({
+    displayMode: 'button',
+    buttonMode:  'list',
+    closeButton: 'right',
+    headerText:  'Buttons',
+    subTitle:    'Pick one, eh?',
+    headerMinWidth: '300px',
+	inputList: [{'id': 'someID', 'title': 'Some Input', 'type': 'text'}],
+    buttons: {
+      'OK': {
+        click: function () { alert('You clicked OK: ' + this.basePop.find('#someID').val()); }
+      },
+      'Cancel': {
+        click: function () { alert('You clicked CANCEL'); },
+        icon: "delete",
+        theme: "c",
+      }
+    }
+  });
+});</pre>
+			</div>
 		</div> 
 		
 	</div>

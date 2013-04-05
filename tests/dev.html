@@ -57,14 +57,18 @@
 						dismissible: false,
 						callbackOpen: function () { 
 							window.thisPop = this.basePop;
-							window.thisPopTime = setTimeout(function () { window.thisPop.popup('close'); }, 3000);
+						//	window.thisPopTime = setTimeout(function () { window.thisPop.popup('close'); }, 3000);
 //							console.log(this); 
 						},
 						callbackClose: function () {
-							clearTimeout(window.thisPopTime);
+						//	clearTimeout(window.thisPopTime);
 							 console.log('bye'); },
 						content:
 							'<div data-role="header"><h1>Howdy</h1></div><div data-role="content"><p>Hi!Hi!Hi!Hi!Hi!Hi!Hi!Hi!Hi!</p></div>',
+						inputList: [
+							{'id': 'username', 'title': 'User Name:'},
+							{'id': 'password', 'title': 'Password:', 'type': 'password' }
+						],
 						buttons : {
 							'OK': {
 								click: function () { 

@@ -24,6 +24,7 @@
 		headerMinWidth: false,
 		subTitle: false,
 		buttonDefaultTheme: 'b',
+		inputList: false,
 		
 		// These options are used in all modes
 		closeButton: false, // or left, or right
@@ -81,6 +82,15 @@
 			if ( o.subTitle !== false && o.buttonMode !== 'list' ) {
 				o.content = o.content + '<p>' + o.subTitle + '</p>';
 			}
+
+			if ( o.inputList !== false ) {
+				o.content = o.content + '<div style="padding-bottom:1em;">';
+				$.each(o.inputList, function(index, value) {
+					o.content = o.content +	"<input type='"+(("type" in value)?value.type:"text")+"' id='"+value.id+"' placeholder='"+value.title+"' />";
+				});
+				o.content = o.content + '</div>';
+			}
+
 			o.content = o.content + '<div class="popupbuttonshere"></div></div>';
 		}
 		
