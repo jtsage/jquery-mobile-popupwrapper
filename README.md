@@ -14,4 +14,4 @@ SimpleDialog Features
 Available Optionss
 -----------------
 
-Check out a full list of options in the [api docs](http://dev.jtsage.com/jQM-PopupWrapper/demos/config.html).
+Check out a full list of options in the [api docs](http://dev.jtsage.com/jQM-PopupWrapper/demos/options.html).

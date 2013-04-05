@@ -2,13 +2,13 @@
  * jQuery Mobile Framework : plugin to provide a dialogs Widget. ver2
  * Copyright (c) JTSage
  * CC 3.0 Attribution.  May be relicensed without permission/notifcation.
- * https://github.com/jtsage/jquery-mobile-simpledialog
+ * https://github.com/jtsage/jquery-mobile-popupwrapper
  */
  
 (function($, undefined ) {
   $.widget( "mobile.popupwrapper", $.mobile.widget, {
 	options: {
-		version: '0.0.9-2013040500', // jQueryMobile-YrMoDaySerial
+		version: '1.3.0-2013040500', // jQueryMobile-YrMoDaySerial
 		displayMode: 'blank', // or 'button'
 		popupTheme: false,
 		popupOverlayTheme: false,

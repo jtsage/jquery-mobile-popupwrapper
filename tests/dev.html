@@ -3,7 +3,7 @@
 <head> 
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>jQueryMobile - PopupWrapper Dev</title>
+	<title>jQueryMobile - PopupWrapper</title>
 	<link href="http://code.jquery.com/mobile/latest/jquery.mobile.css" rel="stylesheet" type="text/css" />
 	
 	<!-- NOTE: Script load order is significant! -->
@@ -12,6 +12,13 @@
 	<script type="text/javascript" src="http://code.jquery.com/mobile/latest/jquery.mobile.min.js"></script>
 	<script type="text/javascript" src="../js/jquery.mobile.popupwrapper.js"></script>
 	
+	<script type="text/javascript" src="http://dev.jtsage.com/gpretty/prettify.js"></script>
+	<link type="text/css" href="http://dev.jtsage.com/gpretty/prettify.css" rel="stylesheet" />
+	<script type="text/javascript">
+		$('div').live('pagecreate', function() {
+			prettyPrint()
+		});
+	</script>
 </head>
 <body>
 <div data-role="page" data-theme="c" id="main"> 
