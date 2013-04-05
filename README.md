@@ -6,7 +6,7 @@ PopupWrapper is a wrapper for the built-in popup's of jQM
 It's purpose is to facilitate easier workflow for *dynamically* generating
 popups. For usage, see [docs and demos](http://dev.jtsage.com/jQM-PopupWrapper/).
 
-SimpleDialog Features
+PopupWrapper Features
 ---------------------
 
 * Two built in modes: buttons and blank

@@ -30,7 +30,7 @@
 		<div class="content-secondary"> 
 	
 			<div id="jqm-homeheader"> 
-				<h1 id="jqm-logo"><img src="/jQM-SimpleDialog/demos/jquery-logo-sd.png" alt="jQuery Mobile Framework :: PopupWrapper" /></h1> 
+				<h1 id="jqm-logo"><img src="/jQM-PopupWrapper/demos/jquery-logo-pw.png" alt="jQuery Mobile Framework :: PopupWrapper" /></h1> 
 				<p>A Popup Dialog Box for jQueryMobile 1.3.0+</p> 
 				
 			</div> 
@@ -53,6 +53,144 @@
 				<li><h3>Button :</h3><p>A button only display where the user can choose one option</p></li>
 				<li><h3>Blank :</h3><p> Free form HTML display.</p></li>
 			</ul>
+
+			<h3>Blank Mode</h3>
+			<a href="#" data-role="button" id="blnkmode">Open Dialog</a>
+			<a href="#sourceBLNK" data-role="button" data-theme="e" data-mini="true" data-rel="popup" data-transition="pop">Source Code</a>
+
+			<script type="text/javascript">
+				$('#blnkmode').on('vclick', function() {
+					$('<div>').popupwrapper({
+						displayMode: 'blank',
+						closeButton: 'right',
+						content:
+							"<div data-role='header'><h1>Antigonish</h1></div><div data-role='content'><p>Yesterday, upon the stair,<br />I met a man who wasn't there<br />He wasn't there again today<br />I wish, I wish he'd go away...</p></div>"
+					});
+				});
+			</script>
+
+			<h3>Button (Button) Mode</h3>
+			<a href="#" data-role="button" id="butbutmode">Open Dialog</a>
+			<a href="#sourceBUTBUT" data-role="button" data-theme="e" data-mini="true" data-rel="popup" data-transition="pop">Source Code</a>
+
+			<script type="text/javascript">
+				$('#butbutmode').on('vclick', function() {
+					$('<div>').popupwrapper({
+						displayMode: 'button',
+						buttonMode:  'button',
+						closeButton: 'right',
+						headerText:  'Buttons',
+						subTitle:    'Pick one, eh?',
+						headerMinWidth: '300px',
+						buttons: {
+							'OK': {
+								click: function () { 
+									alert('You clicked OK');
+								}
+							},
+							'Cancel': {
+								click: function () { 
+									alert('You clicked CANCEL');
+								},
+								icon: "delete",
+								theme: "c",
+							}
+						}
+					});
+				});
+			</script>
+
+			<h3>Button (List) Mode</h3>
+			<a href="#" data-role="button" id="butlistmode">Open Dialog</a>
+			<a href="#sourceBUTLIST" data-role="button" data-theme="e" data-mini="true" data-rel="popup" data-transition="pop">Source Code</a>
+
+			<script type="text/javascript">
+				$('#butlistmode').on('vclick', function() {
+					$('<div>').popupwrapper({
+						displayMode: 'button',
+						buttonMode:  'list',
+						closeButton: 'right',
+						headerText:  'Buttons',
+						subTitle:    'Pick one, eh?',
+						headerMinWidth: '300px',
+						buttons: {
+							'OK': {
+								click: function () { 
+									alert('You clicked OK');
+								}
+							},
+							'Cancel': {
+								click: function () { 
+									alert('You clicked CANCEL');
+								},
+								icon: "delete",
+								theme: "c",
+							}
+						}
+					});
+				});
+			</script>
+
+
+			<div id="sourceBLNK" data-role="popup" class="ui-content">
+				<pre class="prettyprint">
+$('#blnkmode').on('vclick', function() {
+  $('&lt;div&gt;').popupwrapper({
+    displayMode: 'blank',
+    closeButton: 'right',
+    content:
+      "&lt;div data-role='header'&gt;&lt;h1&gt;Antigonish&lt;/h1&gt;&lt;/div&gt;" +
+      "&lt;div data-role='content'&gt;&lt;p&gt;Yesterday, upon the stair,&lt;br /&gt;..&lt;/p&gt;&lt;/div&gt;"
+  });
+});</pre>
+			</div>
+			<div id="sourceBUTBUT" data-role="popup" class="ui-content">
+				<pre class="prettyprint">
+$('#butbutmode').on('vclick', function() {
+  $('&lt;div&gt;').popupwrapper({
+    displayMode: 'button',
+    buttonMode:  'button',
+    closeButton: 'right',
+    headerText:  'Buttons',
+    subTitle:    'Pick one, eh?',
+    headerMinWidth: '300px',
+    buttons: {
+      'OK': {
+        click: function () { alert('You clicked OK'); }
+      },
+      'Cancel': {
+        click: function () { alert('You clicked CANCEL'); },
+        icon: "delete",
+        theme: "c",
+      }
+    }
+  });
+});</pre>
+			</div>
+			<div id="sourceBUTLIST" data-role="popup" class="ui-content">
+				<pre class="prettyprint">
+$('#butlistmode').on('vclick', function() {
+  $('&lt;div&gt;').popupwrapper({
+    displayMode: 'button',
+    buttonMode:  'list',
+    closeButton: 'right',
+    headerText:  'Buttons',
+    subTitle:    'Pick one, eh?',
+    headerMinWidth: '300px',
+    buttons: {
+      'OK': {
+        click: function () { alert('You clicked OK'); }
+      },
+      'Cancel': {
+        click: function () { alert('You clicked CANCEL'); },
+        icon: "delete",
+        theme: "c",
+      }
+    }
+  });
+});</pre>
+			</div>
+
 		</div> 
 		
 	</div>
