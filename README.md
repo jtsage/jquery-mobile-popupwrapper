@@ -1,17 +1,5 @@
-jQuery-Mobile-PopupWrapper
-==========================
+DEPRECIATION NOTICE
+===================
 
-PopupWrapper is a wrapper for the built-in popup's of jQM
-
-It's purpose is to facilitate easier workflow for *dynamically* generating
-popups. For usage, see [docs and demos](http://dev.jtsage.com/jQM-PopupWrapper/).
-
-PopupWrapper Features
----------------------
-
-* Two built in modes: buttons and blank
-
-Available Optionss
------------------
-
-Check out a full list of options in the [api docs](http://dev.jtsage.com/jQM-PopupWrapper/demos/options.html).
+This project has matured, and moved to [jquery-mobile-windows](https://github.com
+jtsage/jquery-mobile-windows)
